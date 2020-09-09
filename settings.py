@@ -2,14 +2,14 @@ from os import path
 import pygame as pg
 
 # WINDOW SETTINGS
-WIDTH = 800
-HEIGHT = 800
+WIDTH = 1024
+HEIGHT = 1024
 TITLE = "Chess"
 
 
 # GAME SETTINGS
 FPS = 60
-BOARDSIZE = 800
+BOARDSIZE = 1024
 ROWS = 8
 COLUMNS = 8
 TILESIZE = BOARDSIZE / ROWS
@@ -18,5 +18,14 @@ LETTERS = ["h", "g", "f", "e", "d", "c", "b", "a"]
 #COLORS
 BLACK = (0,0,0)
 WHITE = (255,255,255)
+
 #IMAGES
-#BACKGROUND = pg.image.load(path.join('images','background.png'))
+WHITETILE = pg.image.load(path.join("assets", "wtile.png"))
+BLACKTILE = pg.image.load(path.join("assets", "btile.png"))
+AMOVE = pg.image.load(path.join("assets", "amove.png"))
+
+BLACKPAWN = pg.image.load(path.join('assets','bpawn.png'))
+WHITEPAWN = pg.image.load(path.join('assets','wpawn.png'))
+
+BLACKROOK = pg.image.load(path.join('assets','brook.png'))
+WHITEROOK = pg.image.load(path.join('assets','wrook.png'))

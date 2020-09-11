@@ -46,6 +46,8 @@ class Player(object):
                                             self.game.bpieces.remove(piece)
                                             self.score += piece.value
                             move.move(to.pos)
+                            if move.value == 1:
+                                move.ascend()
                             self.moved = True
                             break
     def play(self):

@@ -134,7 +134,6 @@ class Rook(Piece):
                             f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])-i}"), None)
             backward = next((tile for tile in self.game.tiles if tile.pos ==
                              f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])+i}"), None)
-            print(i, len(LETTERS),LETTERS.index(rook_pos[0]))
             if i < LETTERS.index(rook_pos[0]):
                 left = next((tile for tile in self.game.tiles if tile.pos ==
                             f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])}"), None)
@@ -159,6 +158,7 @@ class Rook(Piece):
         rights = sorted(rights, key=lambda move: move[1])
         result = self.get_real_moves(forwards) + self.get_real_moves(backwards) + self.get_real_moves(lefts) + self.get_real_moves(rights)
         return result
+
     def add_move(self, value):
         if value != None:
                 if not value.occupied:
@@ -167,6 +167,7 @@ class Rook(Piece):
                    return f"{value.pos}#"
         else:
             return
+
     def get_real_moves(self, list):
         result = []
         for move in list:
@@ -191,3 +192,68 @@ class Bishop(Piece):
         self.value = 3
         self.image = BLACKBISHOP if self.color == BLACK else WHITEBISHOP
 
+    def get_available_moves(self):
+        rook_pos = self.pos
+        leftups = []
+        leftdowns = []
+        rightups = []
+        rightdowns = []
+        for i in range(1, len(LETTERS)+1):
+            if i <= LETTERS.index(rook_pos[0]):
+                leftup = next((tile for tile in self.game.tiles if tile.pos ==
+                                f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])-i}"), None)
+                rightdown = next((tile for tile in self.game.tiles if tile.pos ==
+                                f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])+i}"), None)
+            else:
+                leftup = None
+                rightdown = None
+
+            if i < len(LETTERS) - LETTERS.index(rook_pos[0]):
+                leftdown = next((tile for tile in self.game.tiles if tile.pos ==
+                                f"{LETTERS[LETTERS.index(rook_pos[0])+i]}{int(rook_pos[1])+i}"), None)
+                rightup = next((tile for tile in self.game.tiles if tile.pos ==
+                                f"{LETTERS[LETTERS.index(rook_pos[0])+i]}{int(rook_pos[1])-i}"), None)
+            else:
+                leftdown = None
+                rightup = None
+            leftups.append(self.add_move(leftup))
+            leftdowns.append(self.add_move(leftdown))
+            rightups.append(self.add_move(rightup))
+            rightdowns.append(self.add_move(rightdown))
+        leftups = [i for i in leftups if i]
+        leftdowns = [i for i in leftdowns if i]
+        rightups = [i for i in rightups if i]
+        rightdowns = [i for i in rightdowns if i]
+        leftups = sorted(leftups, key=lambda move: move[1], reverse=True)
+        leftdowns = sorted(leftdowns, key=lambda move: move[1])
+        rightups = sorted(rightups, key=lambda move: move[1], reverse=True)
+        rightdowns = sorted(rightdowns, key=lambda move: move[1])
+        result = self.get_real_moves(leftups) + self.get_real_moves(leftdowns) + self.get_real_moves(rightups) + self.get_real_moves(rightdowns)
+        return result
+
+    def add_move(self, value):
+        if value != None:
+                if not value.occupied:
+                    return value.pos
+                else:
+                   return f"{value.pos}#"
+        else:
+            return
+
+    def get_real_moves(self, list):
+        result = []
+        for move in list:
+            if len(move) > 2:
+                if self.color == BLACK:
+                    if move[:-1] in [piece.pos for piece in self.game.wpieces]:
+                        result.append(move[:-1])
+                else:
+                    if move[:-1] in [piece.pos for piece in self.game.bpieces]:
+                        result.append(move[:-1])
+                break
+            else:
+                result.append(move)
+        return result
+
+    def __str__(self):
+        return self.pos

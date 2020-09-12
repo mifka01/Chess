@@ -29,3 +29,6 @@ WHITEPAWN = pg.image.load(path.join('assets','wpawn.png'))
 
 BLACKROOK = pg.image.load(path.join('assets','brook.png'))
 WHITEROOK = pg.image.load(path.join('assets','wrook.png'))
+
+BLACKBISHOP = pg.image.load(path.join('assets','bbishop.png'))
+WHITEBISHOP = pg.image.load(path.join('assets','wbishop.png'))

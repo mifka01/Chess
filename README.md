@@ -1,4 +1,4 @@
-# Chesspy
+# Chess.py
 Chess created with Python
 
 # Requirements

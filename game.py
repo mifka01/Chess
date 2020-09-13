@@ -21,6 +21,7 @@ class Game():
         self.wpieces = []
         self.load_tiles()
         self.load_pieces()
+        self.all_pieces = self.bpieces + self.wpieces
         self.player1 = Player(self, WHITE)
         self.player2 = Player(self, BLACK)
 
@@ -56,6 +57,14 @@ class Game():
         self.bpieces.append(Bishop(self, f"f1", BLACK))
         self.wpieces.append(Bishop(self, f"c8", WHITE))
         self.wpieces.append(Bishop(self, f"f8", WHITE))
+        self.bpieces.append(Knight(self, f"b1", BLACK))
+        self.bpieces.append(Knight(self, f"g1", BLACK))
+        self.wpieces.append(Knight(self, f"b8", WHITE))
+        self.wpieces.append(Knight(self, f"g8", WHITE))
+        self.bpieces.append(King(self, f"e1", BLACK))
+        self.wpieces.append(King(self, f"e8", WHITE))
+        self.bpieces.append(Queen(self, f"d1", BLACK))
+        self.wpieces.append(Queen(self, f"d8", WHITE))
     def events(self):
         for event in pg.event.get():
             if event.type == QUIT:
@@ -86,6 +95,7 @@ class Game():
             self.player1.pieces = self.wpieces
             self.player2.play()
             self.player2.pieces = self.bpieces
+            self.all_pieces = self.bpieces + self.wpieces
 
     def quit(self):
         self.running = False

@@ -1,5 +1,6 @@
 import pygame as pg
 from settings import *
+from move_methods import *
 
 
 class Tile(pg.sprite.Sprite):
@@ -44,6 +45,30 @@ class Piece(pg.sprite.Sprite):
                 self.rect = tile.rect
                 self.game.screen.blit(self.image, tile.rect)
 
+    def add_move(self, value):
+        if value != None:
+            if not value.occupied:
+                return value.pos
+            else:
+                return f"{value.pos}#"
+        else:
+            return
+
+    def get_real_moves(self, list):
+        result = []
+        for move in list:
+            if len(move) > 2:
+                if self.color == BLACK:
+                    if move[:-1] in [piece.pos for piece in self.game.wpieces]:
+                        result.append(move[:-1])
+                else:
+                    if move[:-1] in [piece.pos for piece in self.game.bpieces]:
+                        result.append(move[:-1])
+                break
+            else:
+                result.append(move)
+        return result
+
 
 class Pawn(Piece):
     def __init__(self, game, pos, color):
@@ -52,63 +77,73 @@ class Pawn(Piece):
         self.image = BLACKPAWN if self.color == BLACK else WHITEPAWN
 
     def ascend(self):
+        chosen = False
         if self.color == BLACK:
+            pieces = [{"type": "Queen", "image": BLACKQUEEN},
+                      {"type": "Knight", "image": BLACKKNIGHT},
+                      {"type": "Bishop", "image": BLACKBISHOP},
+                      {"type": "Rook", "image": BLACKROOK}
+                      ]
+            self.game.screen.blit(ASCEND,(BOARDSIZE/2 - ASCEND.get_width()/2, BOARDSIZE/2 - ASCEND.get_height()/2))
             if self.pos[1] == f"{len(LETTERS)}":
-                print("ascend")
+                for i, piece in enumerate(pieces):
+                    self.game.screen.blit(piece["image"], (BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
+                    piece["rect"] = pg.Rect((BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
+                pg.display.update()
+                while not chosen:
+                    for event in pg.event.get():
+                        if event.type == pg.MOUSEBUTTONDOWN:
+                            mouse_pos = pg.mouse.get_pos()
+                            for piece in pieces:
+                                if piece["rect"].collidepoint(mouse_pos[0], mouse_pos[1]):
+                                    self.game.bpieces.remove(self)
+                                    if piece["type"] == "Queen":
+                                        self.game.bpieces.append(
+                                            Queen(self.game, self.pos, self.color))
+                                    if piece["type"] == "Knight":
+                                        self.game.bpieces.append(
+                                            Knight(self.game, self.pos, self.color))
+                                    if piece["type"] == "Bishop":
+                                        self.game.bpieces.append(
+                                            Bishop(self.game, self.pos, self.color))
+                                    if piece["type"] == "Rook":
+                                        self.game.bpieces.append(
+                                            Rook(self.game, self.pos, self.color))
+                                    chosen = True
         else:
+            pieces = [{"type": "Queen", "image": WHITEQUEEN},
+                      {"type": "Knight", "image": WHITEKNIGHT},
+                      {"type": "Bishop", "image": WHITEBISHOP},
+                      {"type": "Rook", "image": WHITEROOK}]
             if self.pos[1] == "1":
-                print("ascend")
+                self.game.screen.blit(ASCEND,(BOARDSIZE/2 - ASCEND.get_width()/2, BOARDSIZE/2 - ASCEND.get_height()/2))
+                for i, piece in enumerate(pieces):
+                    self.game.screen.blit(piece["image"], (BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
+                    piece["rect"] = pg.Rect((BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
+                pg.display.update()
+                while not chosen:
+                    for event in pg.event.get():
+                        if event.type == pg.MOUSEBUTTONDOWN:
+                            mouse_pos = pg.mouse.get_pos()
+                            for piece in pieces:
+                                if piece["rect"].collidepoint(mouse_pos[0], mouse_pos[1]):
+                                    self.game.wpieces.remove(self)
+                                    if piece["type"] == "Queen":
+                                        self.game.wpieces.append(
+                                            Queen(self.game, self.pos, self.color))
+                                    if piece["type"] == "Knight":
+                                        self.game.wpieces.append(
+                                            Knight(self.game, self.pos, self.color))
+                                    if piece["type"] == "Bishop":
+                                        self.game.wpieces.append(
+                                            Bishop(self.game, self.pos, self.color))
+                                    if piece["type"] == "Rook":
+                                        self.game.wpieces.append(
+                                            Rook(self.game, self.pos, self.color))
+                                    chosen = True
 
     def get_available_moves(self):
-        pawn_pos = self.pos
-        pawn_moves = []
-        tiles = []
-        if self.color == BLACK:
-            if pawn_pos[0] != LETTERS[0]:
-                tiles.append(next((tile for tile in self.game.tiles if tile.pos ==
-                                   f"{LETTERS[LETTERS.index(pawn_pos[0])-1]}{int(pawn_pos[1])+1}"), None))
-            if pawn_pos[0] != LETTERS[len(LETTERS)-1]:
-                tiles.append(next((tile for tile in self.game.tiles if tile.pos ==
-                                   f"{LETTERS[LETTERS.index(pawn_pos[0])+1]}{int(pawn_pos[1])+1}"), None))
-            for tile in tiles:
-                if tile != None:
-                    if tile.occupied:
-                        pawn_moves.append(tile.pos)
-            tile = next((tile for tile in self.game.tiles if tile.pos ==
-                         f"{pawn_pos[0]}{int(pawn_pos[1])+1}"), None)
-            if tile != None:
-                if not tile.occupied:
-                    pawn_moves.append(tile.pos)
-            if self.pos[1] == "2":
-                tile = next((tile for tile in self.game.tiles if tile.pos ==
-                         f"{pawn_pos[0]}{int(pawn_pos[1])+2}"), None)
-                if tile != None:
-                    if not tile.occupied:
-                        pawn_moves.append(tile.pos)
-        else:
-            if pawn_pos[0] != LETTERS[0]:
-                tiles.append(next((tile for tile in self.game.tiles if tile.pos ==
-                                   f"{LETTERS[LETTERS.index(pawn_pos[0])-1]}{int(pawn_pos[1])-1}"), None))
-            if pawn_pos[0] != LETTERS[len(LETTERS)-1]:
-                tiles.append(next((tile for tile in self.game.tiles if tile.pos ==
-                                   f"{LETTERS[LETTERS.index(pawn_pos[0])+1]}{int(pawn_pos[1])-1}"), None))
-            for tile in tiles:
-                if tile != None:
-                    if tile.occupied:
-                        pawn_moves.append(tile.pos)
-            tile = next((tile for tile in self.game.tiles if tile.pos ==
-                         f"{pawn_pos[0]}{int(pawn_pos[1])-1}"), None)
-            if tile != None:
-                if not tile.occupied:
-                    pawn_moves.append(tile.pos)
-            if self.pos[1] == "7":
-                tile = next((tile for tile in self.game.tiles if tile.pos ==
-                         f"{pawn_pos[0]}{int(pawn_pos[1])-2}"), None)
-                if tile != None:
-                    if not tile.occupied:
-                        pawn_moves.append(tile.pos)
-
-        return set(pawn_moves)
+        return get_pawn_moves(self)
 
     def update(self):
         self.ascend()
@@ -124,67 +159,11 @@ class Rook(Piece):
         self.image = BLACKROOK if self.color == BLACK else WHITEROOK
 
     def get_available_moves(self):
-        rook_pos = self.pos
-        forwards = []
-        backwards = []
-        lefts = []
-        rights = []
-        for i in range(1, len(LETTERS)+1):
-            forward = next((tile for tile in self.game.tiles if tile.pos ==
-                            f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])-i}"), None)
-            backward = next((tile for tile in self.game.tiles if tile.pos ==
-                             f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])+i}"), None)
-            if i < LETTERS.index(rook_pos[0]):
-                left = next((tile for tile in self.game.tiles if tile.pos ==
-                            f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])}"), None)
-            else:
-                left = None
-            if i < len(LETTERS) - LETTERS.index(rook_pos[0]):
-                right = next((tile for tile in self.game.tiles if tile.pos ==
-                                f"{LETTERS[LETTERS.index(rook_pos[0])+i]}{int(rook_pos[1])}"), None)
-            else:
-                right = None
-            forwards.append(self.add_move(forward))
-            backwards.append(self.add_move(backward))
-            lefts.append(self.add_move(left))
-            rights.append(self.add_move(right))
-        forwards = [i for i in forwards if i]
-        backwards = [i for i in backwards if i]
-        lefts = [i for i in lefts if i]
-        rights = [i for i in rights if i]
-        forwards = sorted(forwards, key=lambda move: move[1], reverse=True)
-        backwards = sorted(backwards, key=lambda move: move[1])
-        lefts = sorted(lefts, key=lambda move: move[1], reverse=True)
-        rights = sorted(rights, key=lambda move: move[1])
-        result = self.get_real_moves(forwards) + self.get_real_moves(backwards) + self.get_real_moves(lefts) + self.get_real_moves(rights)
-        return result
-
-    def add_move(self, value):
-        if value != None:
-                if not value.occupied:
-                    return value.pos
-                else:
-                   return f"{value.pos}#"
-        else:
-            return
-
-    def get_real_moves(self, list):
-        result = []
-        for move in list:
-            if len(move) > 2:
-                if self.color == BLACK:
-                    if move[:-1] in [piece.pos for piece in self.game.wpieces]:
-                        result.append(move[:-1])
-                else:
-                    if move[:-1] in [piece.pos for piece in self.game.bpieces]:
-                        result.append(move[:-1])
-                break
-            else:
-                result.append(move)
-        return result
+        return get_rook_moves(self)
 
     def __str__(self):
         return self.pos
+
 
 class Bishop(Piece):
     def __init__(self, game, pos, color):
@@ -193,67 +172,46 @@ class Bishop(Piece):
         self.image = BLACKBISHOP if self.color == BLACK else WHITEBISHOP
 
     def get_available_moves(self):
-        rook_pos = self.pos
-        leftups = []
-        leftdowns = []
-        rightups = []
-        rightdowns = []
-        for i in range(1, len(LETTERS)+1):
-            if i <= LETTERS.index(rook_pos[0]):
-                leftup = next((tile for tile in self.game.tiles if tile.pos ==
-                                f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])-i}"), None)
-                rightdown = next((tile for tile in self.game.tiles if tile.pos ==
-                                f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])+i}"), None)
-            else:
-                leftup = None
-                rightdown = None
+        return get_bishop_moves(self)
 
-            if i < len(LETTERS) - LETTERS.index(rook_pos[0]):
-                leftdown = next((tile for tile in self.game.tiles if tile.pos ==
-                                f"{LETTERS[LETTERS.index(rook_pos[0])+i]}{int(rook_pos[1])+i}"), None)
-                rightup = next((tile for tile in self.game.tiles if tile.pos ==
-                                f"{LETTERS[LETTERS.index(rook_pos[0])+i]}{int(rook_pos[1])-i}"), None)
-            else:
-                leftdown = None
-                rightup = None
-            leftups.append(self.add_move(leftup))
-            leftdowns.append(self.add_move(leftdown))
-            rightups.append(self.add_move(rightup))
-            rightdowns.append(self.add_move(rightdown))
-        leftups = [i for i in leftups if i]
-        leftdowns = [i for i in leftdowns if i]
-        rightups = [i for i in rightups if i]
-        rightdowns = [i for i in rightdowns if i]
-        leftups = sorted(leftups, key=lambda move: move[1], reverse=True)
-        leftdowns = sorted(leftdowns, key=lambda move: move[1])
-        rightups = sorted(rightups, key=lambda move: move[1], reverse=True)
-        rightdowns = sorted(rightdowns, key=lambda move: move[1])
-        result = self.get_real_moves(leftups) + self.get_real_moves(leftdowns) + self.get_real_moves(rightups) + self.get_real_moves(rightdowns)
-        return result
+    def __str__(self):
+        return self.pos
 
-    def add_move(self, value):
-        if value != None:
-                if not value.occupied:
-                    return value.pos
-                else:
-                   return f"{value.pos}#"
-        else:
-            return
 
-    def get_real_moves(self, list):
-        result = []
-        for move in list:
-            if len(move) > 2:
-                if self.color == BLACK:
-                    if move[:-1] in [piece.pos for piece in self.game.wpieces]:
-                        result.append(move[:-1])
-                else:
-                    if move[:-1] in [piece.pos for piece in self.game.bpieces]:
-                        result.append(move[:-1])
-                break
-            else:
-                result.append(move)
-        return result
+class Knight(Piece):
+    def __init__(self, game, pos, color):
+        super().__init__(game, pos, color)
+        self.value = 3
+        self.image = BLACKKNIGHT if self.color == BLACK else WHITEKNIGHT
+
+    def get_available_moves(self):
+        return get_knight_moves(self)
+
+    def __str__(self):
+        return self.pos
+
+
+class King(Piece):
+    def __init__(self, game, pos, color):
+        super().__init__(game, pos, color)
+        self.value = 99
+        self.image = BLACKKING if self.color == BLACK else WHITEKING
+
+    def get_available_moves(self):
+        return get_king_moves(self)
+
+    def __str__(self):
+        return self.pos
+
+
+class Queen(Piece):
+    def __init__(self, game, pos, color):
+        super().__init__(game, pos, color)
+        self.value = 9
+        self.image = BLACKQUEEN if self.color == BLACK else WHITEQUEEN
+
+    def get_available_moves(self):
+        return get_queen_moves(self)
 
     def __str__(self):
         return self.pos

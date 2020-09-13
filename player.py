@@ -29,6 +29,15 @@ class Player(object):
                                 tile.occupied = False
                             if tile.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                                 available_moves = move.get_available_moves()
+                                for tiley in self.game.tiles:
+                                    for movey in available_moves:
+                                        if movey == tiley.pos:
+                                            tiley.image = AMOVE
+                                            tiley.draw()
+                                            for piece in self.game.all_pieces:
+                                                if piece.pos == movey:
+                                                    piece.draw()
+                                            pg.display.update()
                                 if tile.pos in available_moves:
                                     to = tile
                                     break
@@ -52,5 +61,13 @@ class Player(object):
                             break
     def play(self):
         self.move()
+        for tile in self.game.tiles:
+            if tile.image != BLACKTILE or tile.image != WHITETILE:
+                if tile.color == BLACK:
+                    tile.image = BLACKTILE
+                else:
+                    tile.image = WHITETILE
+            else:
+                pass
         self.game.update()
         self.moved = False

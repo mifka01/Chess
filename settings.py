@@ -32,3 +32,14 @@ WHITEROOK = pg.image.load(path.join('assets','wrook.png'))
 
 BLACKBISHOP = pg.image.load(path.join('assets','bbishop.png'))
 WHITEBISHOP = pg.image.load(path.join('assets','wbishop.png'))
+
+BLACKKNIGHT = pg.image.load(path.join('assets','bknight.png'))
+WHITEKNIGHT = pg.image.load(path.join('assets','wknight.png'))
+
+BLACKQUEEN = pg.image.load(path.join('assets','bqueen.png'))
+WHITEQUEEN = pg.image.load(path.join('assets','wqueen.png'))
+
+BLACKKING = pg.image.load(path.join('assets','bking.png'))
+WHITEKING = pg.image.load(path.join('assets','wking.png'))
+
+ASCEND = pg.image.load(path.join('assets','ascend.png'))

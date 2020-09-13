@@ -9,4 +9,4 @@ Chess created with Python
 Download ZIP, extract it's content and run *main.py*
 
 
-![alt text](https://github.com/mifka01/Chess/tree/master/assets/chess.png)
+![alt text](https://github.com/mifka01/Chess/blob/master/assets/chess.png)

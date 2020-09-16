@@ -9,7 +9,44 @@ class Player(object):
         self.winner = False
         self.moved = False
         self.pieces = self.game.bpieces if self.color == BLACK else self.game.wpieces
+    def check_king(self):
+        kings = []
+        threat = []
+        for piece in self.game.all_pieces:
+            if piece.value == 99:
+                kings.append(piece)
+        for king in kings:
+            if king.color == BLACK:
+                for white_piece in self.game.wpieces:
+                    threat += white_piece.get_available_moves()
+            else:
+                for black_piece in self.game.bpieces:
+                    threat += black_piece.get_available_moves()
+            count = threat.count(king.pos)
+            if count > 0 and count < 2:
+                king.checked = True
+            else:
+                king.checked = False
+            if count > 1:
+                self.winner = True
+                print(f"{self.color} WINS")
+                self.game.running = False
+                return
 
+        for king in kings:
+            print(king.checked)
+            if king.checked:
+                for tile in self.game.tiles:
+                    if king.pos == tile.pos:
+                        tile.image = CHECKED
+                        tile.draw()
+            else:
+                for tile in self.game.tiles:
+                    if king.pos == tile.pos:
+                        tile.image = BLACKTILE if king.color == BLACK else WHITETILE
+                        tile.draw()
+            king.draw()
+            pg.display.update()
     def move(self):
         move = None
         to = None
@@ -60,13 +97,21 @@ class Player(object):
                             self.moved = True
                             break
     def play(self):
+        self.check_king()
         self.move()
         for tile in self.game.tiles:
-            if tile.image != BLACKTILE or tile.image != WHITETILE:
-                if tile.color == BLACK:
-                    tile.image = BLACKTILE
+            if tile.image != BLACKTILE and tile.image != WHITETILE:
+                if tile.image == CHECKED:
+                    if tile.occupied == False:
+                        if tile.color == BLACK:
+                            tile.image = BLACKTILE
+                        else:
+                            tile.image = WHITETILE
                 else:
-                    tile.image = WHITETILE
+                    if tile.color == BLACK:
+                        tile.image = BLACKTILE
+                    else:
+                        tile.image = WHITETILE
             else:
                 pass
         self.game.update()

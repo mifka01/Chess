@@ -29,12 +29,13 @@ def get_pawn_moves(self):
                     tiles.append(temp)
                 else:
                     blocked = True
-            tile = next((tile for tile in self.game.tiles if tile.pos ==
+            if int(pawn_pos[1]) == 2:
+                tile = next((tile for tile in self.game.tiles if tile.pos ==
                             f"{LETTERS[LETTERS.index(pawn_pos[0])]}{int(pawn_pos[1])+2}"), None)
-            if tile != None:
-                temp = self.add_move(tile)
-                if not tile.occupied and not blocked:
-                    tiles.append(temp)
+                if tile != None:
+                    temp = self.add_move(tile)
+                    if not tile.occupied and not blocked:
+                        tiles.append(temp)
         else:
             if pawn_pos[0] != LETTERS[0]:
                 tile = next((tile for tile in self.game.tiles if tile.pos ==
@@ -57,13 +58,14 @@ def get_pawn_moves(self):
                     tiles.append(temp)
                 else:
                     blocked = True
-            tile = next((tile for tile in self.game.tiles if tile.pos ==
+            if int(pawn_pos[1]) == 7:
+                tile = next((tile for tile in self.game.tiles if tile.pos ==
                             f"{LETTERS[LETTERS.index(pawn_pos[0])]}{int(pawn_pos[1])-2}"), None)
-            if tile != None:
-                temp = self.add_move(tile)
-                if not tile.occupied and not blocked:
-                    tiles.append(temp)
-        
+                if tile != None:
+                    temp = self.add_move(tile)
+                    if not tile.occupied and not blocked:
+                        tiles.append(temp)
+
         left = sorted(left, key=lambda move: move[1])
         right = sorted(right, key=lambda move: move[1])
         tiles = sorted(tiles, key=lambda move: move[1])
@@ -80,7 +82,7 @@ def get_rook_moves(self):
                         f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])-i}"), None)
         backward = next((tile for tile in self.game.tiles if tile.pos ==
                          f"{LETTERS[LETTERS.index(rook_pos[0])]}{int(rook_pos[1])+i}"), None)
-        if i < LETTERS.index(rook_pos[0]):
+        if i <= LETTERS.index(rook_pos[0]):
             left = next((tile for tile in self.game.tiles if tile.pos ==
                         f"{LETTERS[LETTERS.index(rook_pos[0])-i]}{int(rook_pos[1])}"), None)
         else:
@@ -204,18 +206,18 @@ def get_knight_moves(self):
 def get_king_moves(self):
     king_pos = self.pos
     moves = []
-    if LETTERS.index(king_pos[0]) > 0:
+    if LETTERS.index(king_pos[0]) > 1:
         moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])-1]}{int(king_pos[1])}"), None)))
         if int(king_pos[1]) > 0:
             moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])]}{int(king_pos[1])-1}"), None)))
             moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])-1]}{int(king_pos[1])-1}"), None)))
-            moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])+1]}{int(king_pos[1])-1}"), None)))
-    if LETTERS.index(king_pos[0]) < len(LETTERS)-1:
+    if LETTERS.index(king_pos[0]) < len(LETTERS)-1 and LETTERS.index(king_pos[0]) > 1:
         moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])+1]}{int(king_pos[1])}"), None)))
         if int(king_pos[1]) < len(LETTERS) -1:
             moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])]}{int(king_pos[1])+1}"), None)))
             moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])-1]}{int(king_pos[1])+1}"), None)))
             moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])+1]}{int(king_pos[1])+1}"), None)))
+            moves.append(self.add_move(next((tile for tile in self.game.tiles if tile.pos == f"{LETTERS[LETTERS.index(king_pos[0])+1]}{int(king_pos[1])-1}"), None)))
     moves = [i for i in moves if i ]
     moves = sorted(moves, key= lambda move: move[1])
     result = []
@@ -234,6 +236,5 @@ def get_king_moves(self):
 def get_queen_moves(self):
     result = []
     result += get_bishop_moves(self)
-    result += get_king_moves(self)
     result += get_rook_moves(self)
     return result

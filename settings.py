@@ -22,7 +22,9 @@ WHITE = (255,255,255)
 #IMAGES
 WHITETILE = pg.image.load(path.join("assets", "wtile.png"))
 BLACKTILE = pg.image.load(path.join("assets", "btile.png"))
+
 AMOVE = pg.image.load(path.join("assets", "amove.png"))
+CHECKED = pg.image.load(path.join("assets", "checked.png"))
 
 BLACKPAWN = pg.image.load(path.join('assets','bpawn.png'))
 WHITEPAWN = pg.image.load(path.join('assets','wpawn.png'))

@@ -84,8 +84,8 @@ class Pawn(Piece):
                       {"type": "Bishop", "image": BLACKBISHOP},
                       {"type": "Rook", "image": BLACKROOK}
                       ]
-            self.game.screen.blit(ASCEND,(BOARDSIZE/2 - ASCEND.get_width()/2, BOARDSIZE/2 - ASCEND.get_height()/2))
             if self.pos[1] == f"{len(LETTERS)}":
+                self.game.screen.blit(ASCEND,(BOARDSIZE/2 - ASCEND.get_width()/2, BOARDSIZE/2 - ASCEND.get_height()/2))
                 for i, piece in enumerate(pieces):
                     self.game.screen.blit(piece["image"], (BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
                     piece["rect"] = pg.Rect((BOARDSIZE/2 - ASCEND.get_width() / 2 +(i*128),BOARDSIZE/2 - ASCEND.get_height()/4,128,128))
@@ -195,6 +195,7 @@ class King(Piece):
     def __init__(self, game, pos, color):
         super().__init__(game, pos, color)
         self.value = 99
+        self.checked = False
         self.image = BLACKKING if self.color == BLACK else WHITEKING
 
     def get_available_moves(self):
